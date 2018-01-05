@@ -15,9 +15,10 @@ func runListener(c chan byte) {
 
 	buf := make([]byte, 1024)
 
+	fmt.Printf("UDP listener running\n")
+
 	for {
-		n, addr, err := ServerConn.ReadFromUDP(buf)
-		fmt.Printf("Received %v bytes from %v\n", n, addr)
+		n, _, err := ServerConn.ReadFromUDP(buf)
 
 		for _, b := range buf[0:n] {
 			c <- b
@@ -28,4 +29,5 @@ func runListener(c chan byte) {
 		}
 
 	}
+	fmt.Printf("UDP listener done\n")
 }
