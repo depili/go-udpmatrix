@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jessevdk/go-flags"
+	"os"
 )
 
 var options struct {
@@ -24,6 +25,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	fmt.Printf("Starting\n")
 	c := initMatrix()
 	go runListener(c)
 }
