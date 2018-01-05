@@ -15,7 +15,7 @@ func initMatrix() chan byte {
 	config.ChainLength = options.Chain
 	config.Brightness = options.Brightness
 
-	c := make(chan byte)
+	c := make(chan byte, 50)
 
 	go runMatrix(config, c)
 	return c
@@ -34,33 +34,37 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 	y := 0
 
 	var red, green, blue, color_channel uint8
-	ticker := time.NewTicker(time.Millisecond * 50)
+	ticker := time.NewTicker(time.Millisecond * 100)
 
-	select {
-	case <-ticker.C:
-		draw.Draw(canvas, canvas.Bounds(), img, image.ZP, draw.Src)
-		canvas.Render()
-	case b <- c:
-		switch color_channel {
-		case 0:
-			red = uint8(b)
-		case 1:
-			green = uint8(b)
-		case 2:
-			blue = uint8(b)
-			color := color.RGBA{red, green, blue, 255}
-			img.Set(x, y, color)
+	fmt.Printf("Matrix updater running\n")
 
-			// Select the next pixel in loop
-			x++
-			if x >= bounds.Dx() {
-				x = 0
-				y++
-				if y >= bounds.Dy() {
-					y = 0
+	for {
+		select {
+		case <-ticker.C:
+			draw.Draw(canvas, canvas.Bounds(), img, image.ZP, draw.Src)
+			canvas.Render()
+		case b := <-c:
+			switch color_channel {
+			case 0:
+				red = uint8(b)
+			case 1:
+				green = uint8(b)
+			case 2:
+				blue = uint8(b)
+				color := color.RGBA{red, green, blue, 255}
+				img.Set(x, y, color)
+				color_channel = 0
+				// Select the next pixel in loop
+				x++
+				if x >= bounds.Dx() {
+					x = 0
+					y++
+					if y >= bounds.Dy() {
+						y = 0
+					}
 				}
 			}
 		}
-		color_channel = (color_channel + 1) % 3
 	}
+	fmt.Printf("Matrix updater done.\n")
 }
