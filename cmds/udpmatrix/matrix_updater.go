@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/mcuadros/go-rpi-rgb-led-matrix"
+	"image"
 	"image/color"
 	"image/draw"
+	"time"
 )
 
 func initMatrix() chan byte {
@@ -32,8 +34,13 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 	y := 0
 
 	var red, green, blue, color_channel uint8
+	ticker := time.NewTicker(time.Millisecond * 50)
 
-	for b := range c {
+	select {
+	case <-ticker.C:
+		draw.Draw(canvas, canvas.Bounds(), img, image.ZP, draw.Src)
+		canvas.Render()
+	case b <- c:
 		switch color_channel {
 		case 0:
 			red = uint8(b)
@@ -43,8 +50,6 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 			blue = uint8(b)
 			color := color.RGBA{red, green, blue, 255}
 			img.Set(x, y, color)
-			draw.Draw(canvas, canvas.Bounds(), img, image.ZP, draw.Src)
-			canvas.Render()
 
 			// Select the next pixel in loop
 			x++
