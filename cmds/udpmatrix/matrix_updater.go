@@ -16,7 +16,7 @@ func initMatrix() chan byte {
 	config.ChainLength = options.Chain
 	config.Brightness = options.Brightness
 
-	c := make(chan byte, 50)
+	c := make(chan byte, 1000)
 
 	go runMatrix(config, c)
 	return c
@@ -54,7 +54,6 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 				blue = uint8(b)
 				color := color.RGBA{red, green, blue, 255}
 				img.Set(x, y, color)
-				color_channel = 0
 				// Select the next pixel in loop
 				x++
 				if x >= bounds.Dx() {
@@ -65,6 +64,7 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 					}
 				}
 			}
+			color_channel = (color_channel + 1) % 3
 		}
 	}
 	fmt.Printf("Matrix updater done.\n")
