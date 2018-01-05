@@ -10,7 +10,7 @@ func runListener(c chan byte) {
 	fatal(err)
 
 	ServerConn, err := net.ListenUDP("udp", ServerAddr)
-	CheckError(err)
+	fatal(err)
 	defer ServerConn.Close()
 
 	buf := make([]byte, 1024)
@@ -19,7 +19,7 @@ func runListener(c chan byte) {
 		n, addr, err := ServerConn.ReadFromUDP(buf)
 		fmt.Printf("Received %v bytes from %v\n", n, addr)
 
-		for b, _ := range buf[0:n] {
+		for _, b := range buf[0:n] {
 			c <- b
 		}
 
