@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"image"
 	"image/color"
