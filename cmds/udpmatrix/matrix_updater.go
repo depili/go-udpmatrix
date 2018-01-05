@@ -7,10 +7,10 @@ import (
 
 func initMatrix() chan byte {
 	config := &rgbmatrix.DefaultConfig
-	config.Rows = &options.Rows
-	config.Parallel = &options.Parallel
-	config.ChainLength = &options.Chain
-	config.Brightness = &options.Brightness
+	config.Rows = options.Rows
+	config.Parallel = options.Parallel
+	config.ChainLength = options.Chain
+	config.Brightness = options.Brightness
 
 	c := make(chan byte)
 
@@ -29,7 +29,7 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 	x := 0
 	y := 0
 
-	var red, green, blue, color_channel uint16
+	var red, green, blue, color_channel uint8
 
 	for b := range c {
 		switch color_channel {
