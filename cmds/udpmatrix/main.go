@@ -27,7 +27,7 @@ func main() {
 	}
 	fmt.Printf("Starting\n")
 	c := initMatrix()
-	go runListener(c)
+	runListener(c)
 }
 
 func fatal(err error) {

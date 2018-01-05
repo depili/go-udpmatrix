@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/mcuadros/go-rpi-rgb-led-matrix"
 	"image/color"
+	"image/draw"
 )
 
 func initMatrix() chan byte {
@@ -26,6 +27,7 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 	defer canvas.Close()
 
 	bounds := canvas.Bounds()
+	img := image.NewNRGBA(image.Rect(0, 0, bounds.Dx(), bounds.Dy()))
 	x := 0
 	y := 0
 
@@ -40,15 +42,16 @@ func runMatrix(config *rgbmatrix.HardwareConfig, c chan byte) {
 		case 2:
 			blue = uint8(b)
 			color := color.RGBA{red, green, blue, 255}
-			canvas.Set(x, y, color)
+			img.Set(x, y, color)
+			draw.Draw(canvas, canvas.Bounds(), img, image.ZP, draw.Src)
 			canvas.Render()
 
 			// Select the next pixel in loop
 			x++
-			if x > bounds.Dx() {
+			if x >= bounds.Dx() {
 				x = 0
 				y++
-				if y > bounds.Dy() {
+				if y >= bounds.Dy() {
 					y = 0
 				}
 			}
